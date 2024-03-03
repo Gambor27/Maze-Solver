@@ -2,16 +2,16 @@ from tkinter import Tk, BOTH, Canvas
 
 class Window:
     def __init__(self, width, height):
-        self.__win = Tk()
-        self.__win.title('Maze')
-        self.canvas = Canvas(self.__win, bg="white", width=width, height=height)
+        self._win = Tk()
+        self._win.title('Maze')
+        self.canvas = Canvas(self._win, bg="white", width=width, height=height)
         self.canvas.pack(fill=BOTH, expand=1)
         self.running = False
-        self.__win.protocol("WM_DELETE_WINDOW", self.close)
+        self._win.protocol("WM_DELETE_WINDOW", self.close)
 
     def redraw(self):
-        self.__win.update_idletasks()
-        self.__win.update()
+        self._win.update_idletasks()
+        self._win.update()
 
     def wait_for_close(self):
         self.running = True
@@ -71,7 +71,7 @@ class Cell:
             self._win.draw_line(top_wall, "black")
         if self.bottom_wall:
             bottom_wall = Line(self._bottom_left, self._bottom_right)
-            self.win.draw_line(bottom_wall, "black")
+            self._win.draw_line(bottom_wall, "black")
 
 def main():
     win = Window(800, 600)
