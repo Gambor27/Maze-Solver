@@ -22,7 +22,6 @@ class Window:
         self.running = False
     
     def draw_line(self, line, color):
-        print("drawing line")
         line.draw(self.canvas, color)
     
 
@@ -41,11 +40,10 @@ class Line:
 
     
     def draw(self, canvas, color):
-        print(self.x1, self.y1, self.x2, self.y2, color)
         canvas.create_line(
             self.x1, self.y1, self.x2, self.y2, fill=color, width=2
         )
-        canvas.pack()
+        canvas.pack(fill=BOTH, expand=1)
 
 class Cell:
     def __init__(self, point1, point2, win):
@@ -57,7 +55,13 @@ class Cell:
         self._top_right = Point(point2.x, point1.y)
         self._bottom_left = Point(point1.x, point2.y)
         self._bottom_right = point2
+        self._center = self._get_center()
         self._win = win
+    
+    def _get_center(self):
+        x = (self._top_left.x + self._bottom_right.x) // 2
+        y = (self._top_left.y + self._bottom_right.y) // 2
+        return Point(x, y)
     
     def draw(self):
         if self.left_wall:
@@ -72,16 +76,26 @@ class Cell:
         if self.bottom_wall:
             bottom_wall = Line(self._bottom_left, self._bottom_right)
             self._win.draw_line(bottom_wall, "black")
+    
+    def draw_move(self, dest, undo=False):
+        color = "red"
+        if undo:
+            color = "gray"
+        path = Line(self._center, dest._center)
+        self._win.draw_line(path, color)
 
 def main():
     win = Window(800, 600)
     point1 = Point(100, 100)
-    point2 = Point(200, 200)
-    point3 = Point(400, 400)
+    point2 = Point(250, 200)
+    point3 = Point(250, 100)
+    point4 = Point(400, 200)
     cell1 = Cell(point1, point2, win)
-    cell2 = Cell(point1, point3, win)
+    cell2 = Cell(point3, point4, win)
     cell1.draw()
     cell2.draw()
+    cell1.draw_move(cell2)
+    #cell2.draw_move(cell1, undo=True)
     win.wait_for_close()
 
 main()
