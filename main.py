@@ -1,4 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
+import time, random
 
 class Window:
     def __init__(self, width, height):
@@ -24,13 +25,11 @@ class Window:
     def draw_line(self, line, color):
         line.draw(self.canvas, color)
     
-
 class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
     
-
 class Line:
     def __init__(self, point1, point2):
         self.x1 = point1.x
@@ -84,18 +83,57 @@ class Cell:
         path = Line(self._center, dest._center)
         self._win.draw_line(path, color)
 
+class Maze:
+    def __init__(self, point, num_rows, num_cols, cell_size_x, cell_size_y, win):
+        self.x = point.x
+        self.y = point.y
+        self.num_rows = num_rows
+        self.num_cols = num_cols
+        self.cell_size_x = cell_size_x
+        self.cell_size_y = cell_size_y
+        self.win = win
+        self._cells = self._create_cells()
+
+    def _create_cells(self):
+        list_of_cells = []
+        current_x = self.x
+        for i in range(self.num_cols):
+            current_y = self.y
+            current_col = []
+            for j in range(self.num_rows):
+                top_left = Point(current_x, current_y)
+                bottom_right = Point((current_x + self.cell_size_x), (current_y + self.cell_size_y))
+                current_cell = Cell(top_left, bottom_right, self.win)
+                current_col.append(current_cell)
+                current_y += self.cell_size_y
+            current_x += self.cell_size_x
+            list_of_cells.append(current_col)
+        self._draw_cells(list_of_cells)
+        return list_of_cells
+    
+    def _draw_cells(self, cells):
+        for col in cells:
+            for cell in col:
+                cell.draw()
+        self._animate()
+    
+    def _animate(self):
+        self.win.redraw()
+        time.sleep(.05)
+
+
+    
 def main():
-    win = Window(800, 600)
-    point1 = Point(100, 100)
-    point2 = Point(250, 200)
-    point3 = Point(250, 100)
-    point4 = Point(400, 200)
-    cell1 = Cell(point1, point2, win)
-    cell2 = Cell(point3, point4, win)
-    cell1.draw()
-    cell2.draw()
-    cell1.draw_move(cell2)
-    #cell2.draw_move(cell1, undo=True)
+    num_rows = 12
+    num_cols = 16
+    margin = 50
+    screen_x = 800
+    screen_y = 600
+    cell_size_x = (screen_x - 2 * margin) / num_cols
+    cell_size_y = (screen_y - 2 * margin) / num_rows
+    win = Window(screen_x, screen_y)
+    origin = Point(margin, margin)
+    maze = Maze(origin, num_rows, num_cols, cell_size_x, cell_size_y, win)
     win.wait_for_close()
 
 main()
